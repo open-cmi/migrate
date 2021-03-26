@@ -56,5 +56,4 @@ func (o *CurrentOpt) Run() {
 	for _, m := range migrations {
 		fmt.Printf("%s %s\n", m.Seq, m.Description)
 	}
-	return
 }
