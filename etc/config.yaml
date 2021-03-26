@@ -1,0 +1,4 @@
+model:
+  type: sqlite3
+  filename: migrate.sqlite
+  #filename: /Users/zhaodianle/flyover/naynal-server/data/naynal.sqlite
