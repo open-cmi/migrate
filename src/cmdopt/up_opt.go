@@ -2,13 +2,10 @@ package cmdopt
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
-	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/database/dbsql"
 )
@@ -53,40 +50,22 @@ func (o *UpOpt) Run() {
 		fl := filelist[idx]
 		fmt.Printf("start to up migrate: %s %s\n", fl.Seq, fl.Description)
 		rp := common.GetRootPath()
-		sqlfile := fl.Seq + "_" + fl.Description + ".up.sql"
+		sqlfile := fl.Seq + "_" + fl.Description + ".up." + fl.Ext
 		upfile := filepath.Join(rp, "migrations", sqlfile)
-		if !goutils.IsExist(upfile) {
-			fmt.Printf("migrate file %s not exist\n", sqlfile)
-			return
-		}
-		// exec file content
-		f, err := os.Open(upfile)
-		if err != nil {
-			fmt.Printf("open %s failed\n", sqlfile)
-			return
-		}
-		sqlContent, err := ioutil.ReadAll(f)
-		if err != nil {
-			fmt.Printf("read %s failed\n", sqlfile)
-			return
+		var err error
+		if fl.Ext == "sql" {
+
+			err = ExecSqlFile(dbsql.DBSql, upfile)
+		} else if fl.Ext == "so" {
+			err = ExecSoFile(dbsql.DBSql, upfile)
 		}
 
-		arr := strings.SplitAfter(string(sqlContent), ";")
-		for _, sentence := range arr {
-			if strings.Trim(sentence, "") == "" {
-				continue
-			}
-			_, err = dbsql.DBSql.Exec(sentence)
-			if err != nil {
-				break
-			}
-		}
 		if err == nil {
 			dbexec := fmt.Sprintf("insert into migrations(seq, description) values('%s','%s')", fl.Seq, fl.Description)
 			_, err = dbsql.DBSql.Exec(dbexec)
 			if err != nil {
 				fmt.Printf("migrate %s failed, %s\n", sqlfile, err.Error())
-				return
+				break
 			}
 			fmt.Println("successfully!!")
 		}

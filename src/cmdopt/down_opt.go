@@ -2,13 +2,9 @@ package cmdopt
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
-	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/goutils/database/dbsql"
 )
@@ -37,33 +33,13 @@ func (o *DownOpt) Run() {
 		m := migrations[idx]
 		fmt.Printf("start to down migrate: %s %s\n", m.Seq, m.Description)
 		rp := common.GetRootPath()
-		sqlfile := m.Seq + "_" + m.Description + ".down.sql"
+		sqlfile := m.Seq + "_" + m.Description + ".down." + m.Ext
 		downfile := filepath.Join(rp, "migrations", sqlfile)
-		if !goutils.IsExist(downfile) {
-			fmt.Printf("migrate file %s not exist\n", sqlfile)
-			return
-		}
-		// exec file content
-		f, err := os.Open(downfile)
-		if err != nil {
-			fmt.Printf("open %s failed\n", sqlfile)
-			return
-		}
-		sqlContent, err := ioutil.ReadAll(f)
-		if err != nil {
-			fmt.Printf("read %s failed\n", sqlfile)
-			return
-		}
-
-		arr := strings.SplitAfter(string(sqlContent), ";")
-		for _, sentence := range arr {
-			if strings.Trim(sentence, "") == "" {
-				continue
-			}
-			_, err = dbsql.DBSql.Exec(sentence)
-			if err != nil {
-				break
-			}
+		var err error
+		if m.Ext == "sql" {
+			err = ExecSqlFile(dbsql.DBSql, downfile)
+		} else if m.Ext == "so" {
+			err = ExecSoFile(dbsql.DBSql, downfile)
 		}
 		if err == nil {
 			dbexec := fmt.Sprintf("delete from migrations where seq='%s'", m.Seq)

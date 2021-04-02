@@ -9,11 +9,6 @@ import (
 type CurrentOpt struct {
 }
 
-type SeqInfo struct {
-	Seq         string
-	Description string
-}
-
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	err := dbsql.SQLInit()
 	if err != nil {
@@ -27,7 +22,8 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 		// select error , init table
 		var init string = `CREATE TABLE IF NOT EXISTS migrations (
       seq varchar(14) UNIQUE NOT NULL,
-      description varchar(100) NOT NULL default ''
+      description varchar(100) NOT NULL default '',
+			ext varchar(100) NOT NULL default 'sql'
     )`
 		_, err = dbsql.DBSql.Exec(init)
 		if err != nil {
@@ -38,7 +34,7 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 
 	for r.Next() {
 		var row SeqInfo
-		err = r.Scan(&row.Seq, &row.Description)
+		err = r.Scan(&row.Seq, &row.Description, &row.Ext)
 		if err != nil {
 			break
 		}

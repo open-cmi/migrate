@@ -35,15 +35,13 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 
 		item.Seq = sd[0]
 		item.Description = sd[1]
+		item.Ext = arr[2]
 		migrations = append(migrations, item)
 	}
 	if len(migrations) != 0 {
 		sort.SliceStable(migrations, func(i, j int) bool {
 			cmp := strings.Compare(migrations[i].Seq, migrations[j].Seq)
-			if cmp == -1 {
-				return true
-			}
-			return false
+			return cmp == -1
 		})
 	}
 	return migrations
@@ -52,11 +50,10 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 func (o *ListOpt) Run() {
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
-		fmt.Printf("no migrations\n")
+		fmt.Printf("no migrations found\n")
 		return
 	}
 	for _, m := range migrations {
-		fmt.Printf("%s %s\n", m.Seq, m.Description)
+		fmt.Printf("%s %s %s\n", m.Seq, m.Description, m.Ext)
 	}
-	return
 }
