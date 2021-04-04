@@ -18,12 +18,16 @@ func main() {
 	}
 	var dbconf database.Config
 	dbconf.Type = conf.GetStringMap("model")["type"].(string)
-	dbconf.Host = conf.GetStringMap("model")["host"].(string)
-	dbconf.Port = conf.GetStringMap("model")["port"].(int)
-	dbconf.User = conf.GetStringMap("model")["user"].(string)
-	dbconf.Password = conf.GetStringMap("model")["password"].(string)
-	dbconf.Database = conf.GetStringMap("model")["database"].(string)
-	dbconf.File = conf.GetStringMap("model")["location"].(string)
+	if dbconf.Type == "sqlite3" {
+		dbconf.File = conf.GetStringMap("model")["location"].(string)
+	} else {
+		dbconf.Host = conf.GetStringMap("model")["host"].(string)
+		dbconf.Port = conf.GetStringMap("model")["port"].(int)
+		dbconf.User = conf.GetStringMap("model")["user"].(string)
+		dbconf.Password = conf.GetStringMap("model")["password"].(string)
+		dbconf.Database = conf.GetStringMap("model")["database"].(string)
+	}
+
 	db, err := dbsql.SQLInit(&dbconf)
 	if err != nil {
 		fmt.Printf("%s\n", err.Error())
