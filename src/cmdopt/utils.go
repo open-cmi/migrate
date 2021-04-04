@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/open-cmi/goutils"
-	"github.com/open-cmi/goutils/database/dbsql"
 )
 
 type SeqInfo struct {
@@ -43,7 +42,7 @@ func ExecSqlFile(db *sql.DB, sqlfile string) (err error) {
 		if strings.Trim(sentence, "") == "" {
 			continue
 		}
-		_, err = dbsql.DBSql.Exec(sentence)
+		_, err = db.Exec(sentence)
 		if err != nil {
 			errmsg := fmt.Sprintf("migrate failed %s\n", err.Error())
 			return errors.New(errmsg)

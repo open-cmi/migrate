@@ -3,21 +3,16 @@ package cmdopt
 import (
 	"fmt"
 
-	"github.com/open-cmi/goutils/database/dbsql"
+	"github.com/open-cmi/migrate/global"
 )
 
 type CurrentOpt struct {
 }
 
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
-	err := dbsql.SQLInit()
-	if err != nil {
-		fmt.Printf("%s\n", err.Error())
-		return
-	}
-
+	db := global.DB
 	dbquery := `select * from migrations order by seq asc`
-	r, err := dbsql.DBSql.Query(dbquery)
+	r, err := db.Query(dbquery)
 	if err != nil {
 		// select error , init table
 		var init string = `CREATE TABLE IF NOT EXISTS migrations (
@@ -25,7 +20,7 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
       description varchar(100) NOT NULL default '',
 			ext varchar(100) NOT NULL default 'sql'
     )`
-		_, err = dbsql.DBSql.Exec(init)
+		_, err = db.Exec(init)
 		if err != nil {
 			fmt.Println("init migrations table failed")
 		}

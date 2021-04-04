@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/open-cmi/goutils/common"
-	"github.com/open-cmi/goutils/database/dbsql"
+	"github.com/open-cmi/migrate/global"
 )
 
 type DownOpt struct {
@@ -14,6 +14,7 @@ type DownOpt struct {
 }
 
 func (o *DownOpt) Run() {
+	db := global.DB
 	co := &CurrentOpt{}
 	migrations := co.GetMigrationList()
 	if len(migrations) == 0 {
@@ -37,13 +38,13 @@ func (o *DownOpt) Run() {
 		downfile := filepath.Join(rp, "migrations", sqlfile)
 		var err error
 		if m.Ext == "sql" {
-			err = ExecSqlFile(dbsql.DBSql, downfile)
+			err = ExecSqlFile(db, downfile)
 		} else if m.Ext == "so" {
-			err = ExecSoFile(dbsql.DBSql, downfile)
+			err = ExecSoFile(db, downfile)
 		}
 		if err == nil {
 			dbexec := fmt.Sprintf("delete from migrations where seq='%s'", m.Seq)
-			dbsql.DBSql.Exec(dbexec)
+			db.Exec(dbexec)
 			fmt.Println("successfully!!")
 		}
 		count--

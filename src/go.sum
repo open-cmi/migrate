@@ -176,6 +176,8 @@ github.com/open-cmi/goutils v0.0.0-20210324231116-2b112c7dfd2c h1:a/QYG0CDGQ3gHX
 github.com/open-cmi/goutils v0.0.0-20210324231116-2b112c7dfd2c/go.mod h1:QeoNHUqarAEp+gHgbpcug56Gw25FeewF44Dw5sktPYA=
 github.com/open-cmi/goutils v0.0.0-20210327073847-fbd1c88f1cc0 h1:OmVEqwOEJqiLtiDdoFGRINfbBLK6fQi5H0hNL1maO/w=
 github.com/open-cmi/goutils v0.0.0-20210327073847-fbd1c88f1cc0/go.mod h1:4xhaicUjeNFaCZIUMXU5HzknXz4s62zZdO9y4YDjdpk=
+github.com/open-cmi/goutils v0.0.0-20210403151930-1d9c6aee16a3 h1:shJbRIekja7SynyR5kWGGJViWzP1na1cQDCDJoJTQ/w=
+github.com/open-cmi/goutils v0.0.0-20210403151930-1d9c6aee16a3/go.mod h1:4xhaicUjeNFaCZIUMXU5HzknXz4s62zZdO9y4YDjdpk=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml v1.7.0 h1:7utD74fnzVc/cpcyy8sjrlFr5vYpypUixARcHIMIGuI=

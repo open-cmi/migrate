@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/open-cmi/goutils/common"
-	"github.com/open-cmi/goutils/database/dbsql"
+	"github.com/open-cmi/migrate/global"
 )
 
 type UpOpt struct {
@@ -15,6 +15,7 @@ type UpOpt struct {
 }
 
 func (o *UpOpt) Run() {
+	db := global.DB
 	co := &CurrentOpt{}
 	migrations := co.GetMigrationList()
 
@@ -55,14 +56,14 @@ func (o *UpOpt) Run() {
 		var err error
 		if fl.Ext == "sql" {
 
-			err = ExecSqlFile(dbsql.DBSql, upfile)
+			err = ExecSqlFile(db, upfile)
 		} else if fl.Ext == "so" {
-			err = ExecSoFile(dbsql.DBSql, upfile)
+			err = ExecSoFile(db, upfile)
 		}
 
 		if err == nil {
 			dbexec := fmt.Sprintf("insert into migrations(seq, description) values('%s','%s')", fl.Seq, fl.Description)
-			_, err = dbsql.DBSql.Exec(dbexec)
+			_, err = db.Exec(dbexec)
 			if err != nil {
 				fmt.Printf("migrate %s failed, %s\n", sqlfile, err.Error())
 				break
