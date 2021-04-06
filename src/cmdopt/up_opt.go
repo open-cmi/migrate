@@ -39,6 +39,7 @@ func (o *UpOpt) Run() {
 			if strings.Compare(latest.Seq, fm.Seq) < 0 {
 				startIndex = idx
 				find = true
+				break
 			}
 		}
 		if !find {
@@ -55,7 +56,6 @@ func (o *UpOpt) Run() {
 		upfile := filepath.Join(rp, "migrations", sqlfile)
 		var err error
 		if fl.Ext == "sql" {
-
 			err = ExecSqlFile(db, upfile)
 		} else if fl.Ext == "so" {
 			err = ExecSoFile(db, upfile)
@@ -69,9 +69,10 @@ func (o *UpOpt) Run() {
 				break
 			}
 			fmt.Println("successfully!!")
+		} else {
+			fmt.Printf("migrate failed, error: %s\n", err.Error())
+			break
 		}
 		count--
 	}
-
-	return
 }
