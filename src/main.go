@@ -3,29 +3,30 @@ package main
 import (
 	"fmt"
 
-	"github.com/open-cmi/goutils/config"
 	"github.com/open-cmi/goutils/database"
 	"github.com/open-cmi/goutils/database/dbsql"
 	"github.com/open-cmi/migrate/cmdopt"
+	"github.com/open-cmi/migrate/config"
 	"github.com/open-cmi/migrate/global"
 )
 
 func main() {
-	conf, err := config.InitConfig()
+	err := config.Init()
 	if err != nil {
 		fmt.Printf("init config failed\n")
 		return
 	}
+	conf := config.GetConfig()
 	var dbconf database.Config
-	dbconf.Type = conf.GetStringMap("model")["type"].(string)
+	dbconf.Type = conf.Model.Type
 	if dbconf.Type == "sqlite3" {
-		dbconf.File = conf.GetStringMap("model")["location"].(string)
+		dbconf.File = conf.Model.File
 	} else {
-		dbconf.Host = conf.GetStringMap("model")["host"].(string)
-		dbconf.Port = conf.GetStringMap("model")["port"].(int)
-		dbconf.User = conf.GetStringMap("model")["user"].(string)
-		dbconf.Password = conf.GetStringMap("model")["password"].(string)
-		dbconf.Database = conf.GetStringMap("model")["database"].(string)
+		dbconf.Host = conf.Model.Address
+		dbconf.Port = conf.Model.Port
+		dbconf.User = conf.Model.User
+		dbconf.Password = conf.Model.Password
+		dbconf.Database = conf.Model.DB
 	}
 
 	db, err := dbsql.SQLInit(&dbconf)
@@ -33,7 +34,6 @@ func main() {
 		fmt.Printf("%s\n", err.Error())
 		return
 	}
-	global.Conf = conf
 	global.DB = db
 
 	opt := cmdopt.ParseArgs()

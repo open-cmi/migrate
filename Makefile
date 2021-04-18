@@ -1,6 +1,15 @@
-mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-ROOT_DIR := $(shell dirname $(mkfile_path))
+ROOT := $(shell pwd)
 
-.PHONY: build
+ifdef BUILD_DIR
+TARGET=$(BUILD_DIR)/bin/
+else
+TARGET=$(ROOT)/build/
+endif
+
+.PHONY:build
 build:
-	cd src && go build -ldflags "-s -w" -o $(ROOT_DIR)/migrate main.go
+	cd src && go build -ldflags "-s -w" -o $(TARGET)/migrate main.go
+
+clean:
+	rm -r build/*
+
