@@ -10,10 +10,12 @@ import (
 	"github.com/open-cmi/migrate/global"
 )
 
+// UpOpt up operation
 type UpOpt struct {
 	Args []string
 }
 
+// Run up operation run
 func (o *UpOpt) Run() {
 	db := global.DB
 	co := &CurrentOpt{}
@@ -50,22 +52,23 @@ func (o *UpOpt) Run() {
 
 	for idx := startIndex; idx < len(filelist) && count > 0; idx++ {
 		fl := filelist[idx]
-		fmt.Printf("start to up migrate: %s %s\n", fl.Seq, fl.Description)
-		rp := common.GetRootPath()
-		sqlfile := fl.Seq + "_" + fl.Description + ".up." + fl.Ext
-		upfile := filepath.Join(rp, "migrations", sqlfile)
+		fmt.Printf("start to migrate: %s %s\n", fl.Seq, fl.Description)
+
 		var err error
 		if fl.Ext == "sql" {
+			rp := common.GetRootPath()
+			sqlfile := fl.Seq + "_" + fl.Description + ".up." + fl.Ext
+			upfile := filepath.Join(rp, "migrations", sqlfile)
 			err = ExecSqlFile(db, upfile)
-		} else if fl.Ext == "so" {
-			err = ExecSoFile(db, upfile)
+		} else if fl.Ext == "go" {
+			//err = ExecGoScript(db)
 		}
 
 		if err == nil {
 			dbexec := fmt.Sprintf("insert into migrations(seq, description) values('%s','%s')", fl.Seq, fl.Description)
 			_, err = db.Exec(dbexec)
 			if err != nil {
-				fmt.Printf("migrate %s failed, %s\n", sqlfile, err.Error())
+				fmt.Printf("migrate %s %s failed, %s\n", fl.Seq, fl.Description, err.Error())
 				break
 			}
 			fmt.Println("successfully!!")

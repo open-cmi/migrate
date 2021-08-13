@@ -2,16 +2,18 @@ package cmdopt
 
 import (
 	"os"
-	"strings"
 )
 
+// CommandOpt command opt
 type CommandOpt struct {
 	Command string
 	Args    []string
 }
 
+// SubCommands sub command
 var SubCommands []string = []string{"current", "list", "down", "up"}
 
+// ParseArgs parse args
 func ParseArgs() (opt CommandOpt) {
 	if len(os.Args) < 2 {
 		opt.Command = "help"
@@ -19,7 +21,7 @@ func ParseArgs() (opt CommandOpt) {
 	}
 	subcmd := os.Args[1]
 	for _, sub := range SubCommands {
-		if strings.HasPrefix(sub, subcmd) {
+		if subcmd == sub {
 			opt.Command = sub
 			if len(os.Args) > 2 {
 				opt.Args = append(opt.Args, os.Args[2:]...)
@@ -31,6 +33,7 @@ func ParseArgs() (opt CommandOpt) {
 	return
 }
 
+// Run run command
 func (co *CommandOpt) Run() {
 
 	if co.Command == "help" {

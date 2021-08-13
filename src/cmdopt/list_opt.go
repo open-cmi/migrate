@@ -10,9 +10,11 @@ import (
 	"github.com/open-cmi/goutils/common"
 )
 
+// ListOpt list operation
 type ListOpt struct {
 }
 
+// GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 	// find migrations dir
 	rp := common.GetRootPath()
@@ -47,6 +49,7 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 	return migrations
 }
 
+// Run list operation run
 func (o *ListOpt) Run() {
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {

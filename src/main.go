@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/open-cmi/goutils/database"
@@ -10,7 +11,16 @@ import (
 	"github.com/open-cmi/migrate/global"
 )
 
+var configfile string = ""
+
 func main() {
+
+	flag.StringVar(&configfile, "config", configfile, "config file")
+	flag.Parse()
+
+	if configfile != "" {
+		config.SetConfigFile(configfile)
+	}
 	err := config.Init()
 	if err != nil {
 		fmt.Printf("init config failed\n")
@@ -26,12 +36,12 @@ func main() {
 		dbconf.Port = conf.Model.Port
 		dbconf.User = conf.Model.User
 		dbconf.Password = conf.Model.Password
-		dbconf.Database = conf.Model.DB
+		dbconf.Database = conf.Model.Database
 	}
 
 	db, err := dbsql.SQLInit(&dbconf)
 	if err != nil {
-		fmt.Printf("%s\n", err.Error())
+		fmt.Printf("db init failed: %s\n", err.Error())
 		return
 	}
 	global.DB = db

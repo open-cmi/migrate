@@ -66,3 +66,7 @@ func ExecSoFile(db *sql.DB, sqlfile string) (err error) {
 	migrate.(func(*sql.DB))(db)
 	return
 }
+
+func ExecGoFile(db *sql.DB, seqmod SeqInfo, migrate string) {
+
+}
