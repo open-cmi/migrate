@@ -32,6 +32,11 @@ func SetMigrateDir(dir string) {
 	cmdopt.SetMigrateDir(dir)
 }
 
+// Register register
+func Register(seq *cmdopt.SeqInfo) {
+	cmdopt.GoMigrationList = append(cmdopt.GoMigrationList, *seq)
+}
+
 // Run run command
 func Run() {
 	opt := cmdopt.ParseArgs()

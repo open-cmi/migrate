@@ -45,7 +45,7 @@ func (mi ChangeMeInstance) Down() error {
 }
 
 func init() {
-	cmdopt.MigrationList = append(cmdopt.MigrationList, cmdopt.SeqInfo{
+	migrate.Register(&cmdopt.SeqInfo{
 		Seq:         "00000000000000",
 		Description: "example",
 		Ext:         "go",
