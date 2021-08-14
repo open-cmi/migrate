@@ -14,22 +14,44 @@ import (
 type ListOpt struct {
 }
 
-// MigrationList migration list
-var MigrationList []SeqInfo
+// GoMigrationList migration list
+var GoMigrationList []SeqInfo
+
+// SQLMigrationList migrate list
+var SQLMigrationList []SeqInfo
+
+// MigrateMode mode
+var MigrateMode string = "go"
+
+// MigrateDir migreate dir
+var MigrateDir string = ""
+
+// SetMigrateMode set migrate mode
+func SetMigrateMode(mode string) {
+	MigrateMode = mode
+}
+
+// SetMigrateDir set migrate directory
+func SetMigrateDir(dir string) {
+	MigrateDir = dir
+}
 
 // GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
-	if len(MigrationList) != 0 {
-		return MigrationList
+	if MigrateMode == "go" {
+		return GoMigrationList
 	}
 
 	// find migrations dir
-	rp := common.GetRootPath()
-	files, err := ioutil.ReadDir(filepath.Join(rp, "migrations"))
+	if MigrateDir == "" {
+		rp := common.GetRootPath()
+		MigrateDir = filepath.Join(rp, "migrations")
+	}
+
+	files, err := ioutil.ReadDir(MigrateDir)
 	if err != nil {
 		return
 	}
-
 	for _, finfo := range files {
 		fname := finfo.Name()
 		arr := strings.Split(fname, ".")
@@ -63,6 +85,7 @@ func (o *ListOpt) Run() {
 		fmt.Printf("no migrations found\n")
 		return
 	}
+
 	for _, m := range migrations {
 		fmt.Printf("%s %s %s\n", m.Seq, m.Description, m.Ext)
 	}

@@ -2,8 +2,12 @@ package config
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/open-cmi/goutils/confparser"
+	"github.com/open-cmi/goutils/database"
+	"github.com/open-cmi/goutils/database/dbsql"
+	"github.com/open-cmi/migrate/global"
 )
 
 // ConfParser conf parser
@@ -27,6 +31,29 @@ type Config struct {
 
 var config Config
 
+// InitDB init db
+func InitDB() error {
+	var dbconf database.Config
+	dbconf.Type = config.Model.Type
+	if dbconf.Type == "sqlite3" {
+		dbconf.File = config.Model.File
+	} else {
+		dbconf.Host = config.Model.Address
+		dbconf.Port = config.Model.Port
+		dbconf.User = config.Model.User
+		dbconf.Password = config.Model.Password
+		dbconf.Database = config.Model.Database
+	}
+
+	db, err := dbsql.SQLInit(&dbconf)
+	if err != nil {
+		fmt.Printf("db init failed: %s\n", err.Error())
+		return err
+	}
+	global.DB = db
+	return nil
+}
+
 // Init config module init
 func Init(configfile string) (err error) {
 	parser := confparser.New(configfile)
@@ -35,15 +62,5 @@ func Init(configfile string) (err error) {
 	}
 	err = parser.Load(&config)
 	ConfParser = parser
-	return err
-}
-
-// Save save config
-func Save(c *Config) {
-	ConfParser.Save(c)
-}
-
-// GetConfig get config
-func GetConfig() *Config {
-	return &config
+	return InitDB()
 }

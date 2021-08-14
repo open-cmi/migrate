@@ -2,4 +2,4 @@ module github.com/open-cmi/migrate
 
 go 1.16
 
-require github.com/open-cmi/goutils v0.0.0-20210418081135-934e95a1f5b4
+require github.com/open-cmi/goutils v0.0.0-20210814040113-be7d4f091db6
