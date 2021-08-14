@@ -8,11 +8,11 @@ endif
 
 .PHONY:build
 build:
-	cd src && go build -ldflags "-s -w" -o $(TARGET)/migrate main.go
+	go build -ldflags "-s -w" -o $(TARGET)/migrate main.go
 
 .PHONY:test
 test:
-	cd src && go test ./...
+	go test ./...
 
 .PHONY:clean
 clean:

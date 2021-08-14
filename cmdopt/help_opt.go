@@ -22,8 +22,10 @@ func (ho *HelpOpt) Run() {
 	fmt.Printf("  list:        show migrations file list\n")
 	fmt.Printf("  up:          migrate number files\n")
 	fmt.Printf("  down:        rollback number database\n")
+	fmt.Printf("  generate:    generate migrate file\n")
 
 	fmt.Printf("option:\n")
 	fmt.Printf("  up [num]:\n")
 	fmt.Printf("  down [num]:\n")
+	fmt.Printf("  generate {filename}\n")
 }

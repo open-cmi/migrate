@@ -65,15 +65,6 @@ func (g *GenerateOpt) Run() {
 	// 从template模版读取字符串，然后替换日期
 	rt := common.Getwd()
 
-	/*
-		templateFile := filepath.Join(rt, "template", "example.go")
-
-		rf, err := os.Open(templateFile)
-		if err != nil {
-			fmt.Printf("open template file failed, please confirm %s is exist.", templateFile)
-			return
-		}*/
-
 	t := time.Now()
 	date := fmt.Sprintf("%4d%02d%02d%02d%02d%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 	wfile := fmt.Sprintf("%s_%s.go", date, g.Args[0])
@@ -85,12 +76,6 @@ func (g *GenerateOpt) Run() {
 		return
 	}
 
-	/*
-		content, err := io.ReadAll(rf)
-		if err != nil {
-			fmt.Printf("read file content failed\n")
-			return
-		}*/
 	content := template
 
 	newcontent := strings.Replace(content, "00000000000000", date, -1)

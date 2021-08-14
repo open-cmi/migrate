@@ -6,7 +6,7 @@ import (
 
 // Register register
 func Register(seq *cmdopt.SeqInfo) {
-	cmdopt.MigrationList = append(cmdopt.MigrationList, *seq)
+	cmdopt.GoMigrationList = append(cmdopt.GoMigrationList, *seq)
 }
 
 // Init init
