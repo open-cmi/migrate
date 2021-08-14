@@ -1,10 +1,12 @@
 package cmdopt
 
 import (
+	"flag"
 	"fmt"
-	"strconv"
+	"os"
 	"strings"
 
+	"github.com/open-cmi/migrate/config"
 	"github.com/open-cmi/migrate/global"
 )
 
@@ -14,7 +16,29 @@ type UpOpt struct {
 }
 
 // Run up operation run
-func (o *UpOpt) Run() {
+func (o *UpOpt) Run() error {
+	upCmd := flag.NewFlagSet("up", flag.ExitOnError)
+	upCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
+	upCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+	upCmd.IntVar(&count, "count", count, "migrate up count")
+
+	upCmd.Parse(os.Args[2:])
+
+	if configfile == "" {
+		configfile = GetDefaultConfigFile()
+	}
+	err := config.Init(configfile)
+	if err != nil {
+		fmt.Printf("init config failed: %s\n", err.Error())
+		return err
+	}
+	if migratedir == "" {
+		SetMigrateMode("go")
+	} else {
+		SetMigrateMode("sql")
+		SetMigrateDir(migratedir)
+	}
+
 	db := global.DB
 	co := &CurrentOpt{}
 	migrations := co.GetMigrationList()
@@ -22,12 +46,8 @@ func (o *UpOpt) Run() {
 	lo := &ListOpt{}
 	filelist := lo.GetMigrationList()
 
-	var count int = len(filelist)
-	if len(o.Args) != 0 {
-		ct, err := strconv.Atoi(o.Args[0])
-		if err == nil && ct > 0 {
-			count = ct
-		}
+	if count == -1 {
+		count = len(filelist)
 	}
 
 	// find start index
@@ -44,7 +64,7 @@ func (o *UpOpt) Run() {
 		}
 		if !find {
 			fmt.Printf("no migrations\n")
-			return
+			return nil
 		}
 	}
 
@@ -52,7 +72,6 @@ func (o *UpOpt) Run() {
 		fl := filelist[idx]
 		fmt.Printf("start to migrate: %s %s\n", fl.Seq, fl.Description)
 
-		var err error
 		if fl.Ext == "sql" {
 			err = ExecSQLMigrate(db, &fl, "up")
 		} else if fl.Ext == "go" {
@@ -73,4 +92,5 @@ func (o *UpOpt) Run() {
 		}
 		count--
 	}
+	return err
 }

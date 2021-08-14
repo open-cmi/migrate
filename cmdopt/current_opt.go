@@ -1,8 +1,11 @@
 package cmdopt
 
 import (
+	"flag"
 	"fmt"
+	"os"
 
+	"github.com/open-cmi/migrate/config"
 	"github.com/open-cmi/migrate/global"
 )
 
@@ -41,13 +44,26 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 }
 
 // Run run
-func (o *CurrentOpt) Run() {
+func (o *CurrentOpt) Run() error {
+	currentCmd := flag.NewFlagSet("current", flag.ExitOnError)
+	currentCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
+
+	currentCmd.Parse(os.Args[2:])
+	if configfile == "" {
+		configfile = GetDefaultConfigFile()
+	}
+	err := config.Init(configfile)
+	if err != nil {
+		fmt.Printf("init config failed: %s\n", err.Error())
+		return err
+	}
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
 		fmt.Printf("no migrations\n")
-		return
+		return nil
 	}
 	for _, m := range migrations {
 		fmt.Printf("%s %s %s\n", m.Seq, m.Description, m.Ext)
 	}
+	return nil
 }

@@ -7,9 +7,11 @@ import (
 	"strings"
 )
 
+// HelpOpt help operation
 type HelpOpt struct {
 }
 
+// Run run help command
 func (ho *HelpOpt) Run() {
 	executable, _ := os.Executable()
 	proc := filepath.Base(executable)
@@ -24,8 +26,5 @@ func (ho *HelpOpt) Run() {
 	fmt.Printf("  down:        rollback number database\n")
 	fmt.Printf("  generate:    generate migrate file\n")
 
-	fmt.Printf("option:\n")
-	fmt.Printf("  up [num]:\n")
-	fmt.Printf("  down [num]:\n")
-	fmt.Printf("  generate {filename}\n")
+	fmt.Printf("%s subcommand -h for more subcommand info\n", proc)
 }

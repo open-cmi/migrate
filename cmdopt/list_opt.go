@@ -1,13 +1,12 @@
 package cmdopt
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
+	"os"
 	"sort"
 	"strings"
-
-	"github.com/open-cmi/goutils/common"
 )
 
 // ListOpt list operation
@@ -20,32 +19,22 @@ var GoMigrationList []SeqInfo
 // SQLMigrationList migrate list
 var SQLMigrationList []SeqInfo
 
-// MigrateMode mode
-var MigrateMode string = "go"
-
-// MigrateDir migreate dir
-var MigrateDir string = ""
-
-// SetMigrateMode set migrate mode
-func SetMigrateMode(mode string) {
-	MigrateMode = mode
-}
-
-// SetMigrateDir set migrate directory
-func SetMigrateDir(dir string) {
-	MigrateDir = dir
-}
-
 // GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
-	if MigrateMode == "go" {
-		return GoMigrationList
+	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
+	listCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+
+	listCmd.Parse(os.Args[2:])
+
+	if migratedir == "" {
+		SetMigrateMode("go")
+	} else {
+		SetMigrateMode("sql")
+		SetMigrateDir(migratedir)
 	}
 
-	// find migrations dir
-	if MigrateDir == "" {
-		rp := common.GetRootPath()
-		MigrateDir = filepath.Join(rp, "migrations")
+	if MigrateMode == "go" {
+		return GoMigrationList
 	}
 
 	files, err := ioutil.ReadDir(MigrateDir)

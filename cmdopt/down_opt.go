@@ -1,33 +1,57 @@
 package cmdopt
 
 import (
+	"flag"
 	"fmt"
-	"strconv"
+	"os"
 
+	"github.com/open-cmi/migrate/config"
 	"github.com/open-cmi/migrate/global"
 )
 
+var configfile string = ""
+var migratedir string = ""
+var count int = -1
+
 // DownOpt down operation
 type DownOpt struct {
-	Args []string
 }
 
 // Run down operation
-func (o *DownOpt) Run() {
+func (o *DownOpt) Run() error {
+
+	downCmd := flag.NewFlagSet("down", flag.ExitOnError)
+	downCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
+	downCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory")
+	downCmd.IntVar(&count, "count", count, "migrate count")
+
+	downCmd.Parse(os.Args[2:])
+
+	if configfile == "" {
+		configfile = GetDefaultConfigFile()
+	}
+	err := config.Init(configfile)
+	if err != nil {
+		fmt.Printf("init config failed: %s\n", err.Error())
+		return err
+	}
+	if migratedir == "" {
+		SetMigrateMode("go")
+	} else {
+		SetMigrateMode("sql")
+		SetMigrateDir(migratedir)
+	}
+
 	db := global.DB
 	co := &CurrentOpt{}
 	migrations := co.GetMigrationList()
 	if len(migrations) == 0 {
 		fmt.Printf("no migration to down\n")
-		return
+		return nil
 	}
 
-	var count int = len(migrations)
-	if len(o.Args) != 0 {
-		ct, err := strconv.Atoi(o.Args[0])
-		if err == nil && ct > 0 {
-			count = ct
-		}
+	if count == -1 {
+		count = len(migrations)
 	}
 
 	for idx := len(migrations) - 1; idx >= 0 && count > 0; idx-- {
@@ -46,5 +70,5 @@ func (o *DownOpt) Run() {
 		count--
 	}
 
-	return
+	return nil
 }

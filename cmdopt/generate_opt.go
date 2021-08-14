@@ -1,6 +1,8 @@
 package cmdopt
 
 import (
+	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -11,7 +13,7 @@ import (
 	"github.com/open-cmi/goutils/common"
 )
 
-var template string = `
+var gotemplate string = `
 package migrations
 
 import (
@@ -56,32 +58,73 @@ func init() {
 
 `
 
+var sqlup string = ``
+var sqldown string = ``
+
 // GenerateOpt generate opt
 type GenerateOpt struct {
-	Args []string
 }
 
+var name string = ""
+
 // Run run
-func (g *GenerateOpt) Run() {
-	// 从template模版读取字符串，然后替换日期
-	rt := common.Getwd()
+func (g *GenerateOpt) Run() error {
+	generateCmd := flag.NewFlagSet("generate", flag.ExitOnError)
+	generateCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+	generateCmd.StringVar(&name, "name", name, "script name")
+
+	generateCmd.Parse(os.Args[2:])
+
+	if name == "" {
+		generateCmd.Usage()
+		return errors.New("name cant't be empty")
+	}
+	if migratedir == "" {
+		SetMigrateMode("go")
+	} else {
+		SetMigrateMode("sql")
+		SetMigrateDir(migratedir)
+	}
 
 	t := time.Now()
 	date := fmt.Sprintf("%4d%02d%02d%02d%02d%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
-	wfile := fmt.Sprintf("%s_%s.go", date, g.Args[0])
-	wfilepath := filepath.Join(rt, "migrations", wfile)
-	fmt.Println(date, wfile)
-	wf, err := os.OpenFile(wfilepath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
-	if err != nil {
-		fmt.Printf("create faile failed in migrations")
-		return
+	if MigrateMode == "go" {
+		// 从template模版读取字符串，然后替换日期
+		rt := common.Getwd()
+
+		wfile := fmt.Sprintf("%s_%s.go", date, name)
+		wfilepath := filepath.Join(rt, "migrations", wfile)
+		wf, err := os.OpenFile(wfilepath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		if err != nil {
+			fmt.Printf("create file failed in migrations, please confirm migrations directory is exist\n")
+			return err
+		}
+
+		content := gotemplate
+
+		newcontent := strings.Replace(content, "00000000000000", date, -1)
+		newcontent = strings.Replace(newcontent, "example", name, -1)
+		newcontent = strings.Replace(newcontent, "MigrateInstance", "ChangeMeInstance", -1)
+		io.WriteString(wf, newcontent)
+	} else {
+		// 从template模版读取字符串，然后替换日期
+		upfile := fmt.Sprintf("%s_%s.up.sql", date, name)
+		wfilepath := filepath.Join(MigrateDir, upfile)
+		wf, err := os.OpenFile(wfilepath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		if err != nil {
+			fmt.Printf("create file failed in migrations\n")
+			return err
+		}
+		io.WriteString(wf, sqlup)
+
+		downfile := fmt.Sprintf("%s_%s.down.sql", date, name)
+		wfilepath = filepath.Join(MigrateDir, downfile)
+		wf, err = os.OpenFile(wfilepath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		if err != nil {
+			fmt.Printf("create file failed in migrations\n")
+			return err
+		}
+		io.WriteString(wf, sqldown)
 	}
-
-	content := template
-
-	newcontent := strings.Replace(content, "00000000000000", date, -1)
-	newcontent = strings.Replace(newcontent, "example", g.Args[0], -1)
-	newcontent = strings.Replace(newcontent, "MigrateInstance", "ChangeMeInstance", -1)
-	io.WriteString(wf, newcontent)
-	return
+	return nil
 }

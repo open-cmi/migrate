@@ -23,9 +23,6 @@ func ParseArgs() (opt CommandOpt) {
 	for _, sub := range SubCommands {
 		if subcmd == sub {
 			opt.Command = sub
-			if len(os.Args) > 2 {
-				opt.Args = append(opt.Args, os.Args[2:]...)
-			}
 			return
 		}
 	}
@@ -46,13 +43,13 @@ func (co *CommandOpt) Run() {
 		o := &ListOpt{}
 		o.Run()
 	} else if co.Command == "down" {
-		o := &DownOpt{Args: co.Args}
+		o := &DownOpt{}
 		o.Run()
 	} else if co.Command == "up" {
-		o := &UpOpt{Args: co.Args}
+		o := &UpOpt{}
 		o.Run()
 	} else if co.Command == "generate" {
-		o := &GenerateOpt{Args: co.Args}
+		o := &GenerateOpt{}
 		o.Run()
 	}
 }

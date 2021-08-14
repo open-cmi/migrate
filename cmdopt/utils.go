@@ -13,6 +13,7 @@ import (
 
 	"github.com/open-cmi/goutils"
 	"github.com/open-cmi/goutils/common"
+	"github.com/open-cmi/migrate/config"
 )
 
 // SeqInfo migrate seq info
@@ -21,6 +22,38 @@ type SeqInfo struct {
 	Description string
 	Ext         string
 	Instance    interface{}
+}
+
+// GetDefaultConfigFile get default file
+func GetDefaultConfigFile() string {
+	rp := common.Getwd()
+	configfile := filepath.Join(rp, "etc", "db.json")
+	return configfile
+}
+
+// SetConfigFile set config file
+func SetConfigFile(configfile string) {
+	err := config.Init(configfile)
+	if err != nil {
+		fmt.Printf("init config failed: %s\n", err.Error())
+		return
+	}
+}
+
+// MigrateMode mode
+var MigrateMode string = "go"
+
+// MigrateDir migreate dir
+var MigrateDir string = ""
+
+// SetMigrateMode set migrate mode
+func SetMigrateMode(mode string) {
+	MigrateMode = mode
+}
+
+// SetMigrateDir set migrate directory
+func SetMigrateDir(dir string) {
+	MigrateDir = dir
 }
 
 // ExecSQLMigrate exec sql mod
