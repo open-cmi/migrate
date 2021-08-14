@@ -17,6 +17,7 @@ package migrations
 import (
 	"fmt"
 
+	"github.com/open-cmi/migrate"
 	"github.com/open-cmi/migrate/cmdopt"
 	"github.com/open-cmi/migrate/global"
 )
