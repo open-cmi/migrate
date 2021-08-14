@@ -2,17 +2,17 @@ package cmdopt
 
 import (
 	"fmt"
-	"path/filepath"
 	"strconv"
 
-	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/migrate/global"
 )
 
+// DownOpt down operation
 type DownOpt struct {
 	Args []string
 }
 
+// Run down operation
 func (o *DownOpt) Run() {
 	db := global.DB
 	co := &CurrentOpt{}
@@ -33,14 +33,10 @@ func (o *DownOpt) Run() {
 	for idx := len(migrations) - 1; idx >= 0 && count > 0; idx-- {
 		m := migrations[idx]
 		fmt.Printf("start to down migrate: %s %s\n", m.Seq, m.Description)
-		rp := common.GetRootPath()
-		sqlfile := m.Seq + "_" + m.Description + ".down." + m.Ext
-		downfile := filepath.Join(rp, "migrations", sqlfile)
+
 		var err error
 		if m.Ext == "sql" {
-			err = ExecSqlFile(db, downfile)
-		} else if m.Ext == "so" {
-			err = ExecSoFile(db, downfile)
+			err = ExecSQLMigrate(db, &m, "down")
 		}
 		if err == nil {
 			dbexec := fmt.Sprintf("delete from migrations where seq='%s'", m.Seq)

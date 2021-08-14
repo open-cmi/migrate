@@ -6,9 +6,11 @@ import (
 	"github.com/open-cmi/migrate/global"
 )
 
+// CurrentOpt get current migration
 type CurrentOpt struct {
 }
 
+// GetMigrationList get migration list
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	db := global.DB
 	dbquery := `select * from migrations order by seq asc`
@@ -16,10 +18,10 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	if err != nil {
 		// select error , init table
 		var init string = `CREATE TABLE IF NOT EXISTS migrations (
-      seq varchar(14) UNIQUE NOT NULL,
-      description varchar(100) NOT NULL default '',
-			ext varchar(100) NOT NULL default 'sql'
-    )`
+							seq varchar(14) UNIQUE NOT NULL,
+							description varchar(100) NOT NULL default '',
+									ext varchar(100) NOT NULL default 'sql'
+							)`
 		_, err = db.Exec(init)
 		if err != nil {
 			fmt.Println("init migrations table failed")
@@ -38,6 +40,7 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	return migrations
 }
 
+// Run run
 func (o *CurrentOpt) Run() {
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
@@ -45,6 +48,6 @@ func (o *CurrentOpt) Run() {
 		return
 	}
 	for _, m := range migrations {
-		fmt.Printf("%s %s\n", m.Seq, m.Description)
+		fmt.Printf("%s %s %s\n", m.Seq, m.Description, m.Ext)
 	}
 }

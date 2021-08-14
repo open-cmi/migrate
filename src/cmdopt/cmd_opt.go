@@ -11,7 +11,7 @@ type CommandOpt struct {
 }
 
 // SubCommands sub command
-var SubCommands []string = []string{"current", "list", "down", "up"}
+var SubCommands []string = []string{"current", "list", "down", "up", "generate"}
 
 // ParseArgs parse args
 func ParseArgs() (opt CommandOpt) {
@@ -50,6 +50,9 @@ func (co *CommandOpt) Run() {
 		o.Run()
 	} else if co.Command == "up" {
 		o := &UpOpt{Args: co.Args}
+		o.Run()
+	} else if co.Command == "generate" {
+		o := &GenerateOpt{Args: co.Args}
 		o.Run()
 	}
 }

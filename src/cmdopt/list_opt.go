@@ -14,8 +14,15 @@ import (
 type ListOpt struct {
 }
 
+// MigrationList migration list
+var MigrationList []SeqInfo
+
 // GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
+	if len(MigrationList) != 0 {
+		return MigrationList
+	}
+
 	// find migrations dir
 	rp := common.GetRootPath()
 	files, err := ioutil.ReadDir(filepath.Join(rp, "migrations"))

@@ -2,11 +2,9 @@ package cmdopt
 
 import (
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 
-	"github.com/open-cmi/goutils/common"
 	"github.com/open-cmi/migrate/global"
 )
 
@@ -56,16 +54,13 @@ func (o *UpOpt) Run() {
 
 		var err error
 		if fl.Ext == "sql" {
-			rp := common.GetRootPath()
-			sqlfile := fl.Seq + "_" + fl.Description + ".up." + fl.Ext
-			upfile := filepath.Join(rp, "migrations", sqlfile)
-			err = ExecSqlFile(db, upfile)
+			err = ExecSQLMigrate(db, &fl, "up")
 		} else if fl.Ext == "go" {
-			//err = ExecGoScript(db)
+			err = ExecGoMigrate(db, &fl, "up")
 		}
 
 		if err == nil {
-			dbexec := fmt.Sprintf("insert into migrations(seq, description) values('%s','%s')", fl.Seq, fl.Description)
+			dbexec := fmt.Sprintf("insert into migrations(seq, description, ext) values('%s','%s','%s')", fl.Seq, fl.Description, fl.Ext)
 			_, err = db.Exec(dbexec)
 			if err != nil {
 				fmt.Printf("migrate %s %s failed, %s\n", fl.Seq, fl.Description, err.Error())
