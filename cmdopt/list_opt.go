@@ -21,17 +21,6 @@ var SQLMigrationList []SeqInfo
 
 // GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
-	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
-	listCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
-
-	listCmd.Parse(os.Args[2:])
-
-	if migratedir == "" {
-		SetMigrateMode("go")
-	} else {
-		SetMigrateMode("sql")
-		SetMigrateDir(migratedir)
-	}
 
 	if MigrateMode == "go" {
 		return GoMigrationList
@@ -69,6 +58,18 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 
 // Run list operation run
 func (o *ListOpt) Run() {
+	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
+	listCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+
+	listCmd.Parse(os.Args[2:])
+
+	if migratedir == "" {
+		SetMigrateMode("go")
+	} else {
+		SetMigrateMode("sql")
+		SetMigrateDir(migratedir)
+	}
+
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
 		fmt.Printf("no migrations found\n")

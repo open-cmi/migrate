@@ -27,6 +27,7 @@ func (o *DownOpt) Run() error {
 
 	downCmd.Parse(os.Args[2:])
 
+	fmt.Println(configfile)
 	if configfile == "" {
 		configfile = GetDefaultConfigFile()
 	}

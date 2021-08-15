@@ -58,9 +58,8 @@ func SetMigrateDir(dir string) {
 
 // ExecSQLMigrate exec sql mod
 func ExecSQLMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
-	rp := common.GetRootPath()
 	sqlfile := si.Seq + "_" + si.Description + "." + updown + "." + si.Ext
-	sqlfilepath := filepath.Join(rp, "migrations", sqlfile)
+	sqlfilepath := filepath.Join(MigrateDir, sqlfile)
 
 	if !goutils.IsExist(sqlfilepath) {
 		errmsg := fmt.Sprintf("migrate file %s not exist\n", sqlfilepath)

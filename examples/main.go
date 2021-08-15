@@ -4,9 +4,6 @@ import (
 	"github.com/open-cmi/migrate"
 )
 
-var configfile string = ""
-var migratedir string = ""
-
 func main() {
 
 	migrate.Init()
