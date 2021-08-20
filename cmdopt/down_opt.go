@@ -62,6 +62,8 @@ func (o *DownOpt) Run() error {
 		var err error
 		if m.Ext == "sql" {
 			err = ExecSQLMigrate(db, &m, "down")
+		} else if m.Ext == "go" {
+			err = ExecGoMigrate(db, &m, "down")
 		}
 		if err == nil {
 			dbexec := fmt.Sprintf("delete from migrations where seq='%s'", m.Seq)
