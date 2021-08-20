@@ -13,6 +13,16 @@ import (
 type CurrentOpt struct {
 }
 
+// GetInstanceFromSeq get instance from seq
+func GetInstanceFromSeq(seq string) interface{} {
+	for _, ins := range GoMigrationList {
+		if ins.Seq == seq {
+			return ins.Instance
+		}
+	}
+	return nil
+}
+
 // GetMigrationList get migration list
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	db := global.DB
@@ -37,6 +47,12 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 		err = r.Scan(&row.Seq, &row.Description, &row.Ext)
 		if err != nil {
 			break
+		}
+		if row.Ext == "go" {
+			row.Instance = GetInstanceFromSeq(row.Seq)
+			if row.Instance == nil {
+				fmt.Printf("\033[1;31;40mWarning\033[0m seq %s's Ext is go, but it's instance is not found\n", row.Seq)
+			}
 		}
 		migrations = append(migrations, row)
 	}
