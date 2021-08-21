@@ -6,7 +6,7 @@ import (
 
 func main() {
 
-	migrate.Init()
+	migrate.Init("example")
 	// if you use go mode, should init here
 
 	migrate.Run()

@@ -5,8 +5,9 @@ import (
 )
 
 // Init module init
-func Init() error {
+func Init(service string) error {
 
+	cmdopt.Service = service
 	return nil
 }
 

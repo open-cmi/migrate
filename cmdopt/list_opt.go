@@ -45,6 +45,7 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 		item.Seq = sd[0]
 		item.Description = sd[1]
 		item.Ext = arr[2]
+		item.Service = Service
 		migrations = append(migrations, item)
 	}
 	if len(migrations) != 0 {
