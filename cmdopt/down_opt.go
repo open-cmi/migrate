@@ -25,13 +25,15 @@ func (o *DownOpt) Run() error {
 	downCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory")
 	downCmd.IntVar(&count, "count", count, "migrate count")
 
-	downCmd.Parse(os.Args[2:])
+	err := downCmd.Parse(os.Args[2:])
+	if err != nil {
+		return err
+	}
 
-	fmt.Println(configfile)
 	if configfile == "" {
 		configfile = GetDefaultConfigFile()
 	}
-	err := config.Init(configfile)
+	err = config.Init(configfile)
 	if err != nil {
 		fmt.Printf("init config failed: %s\n", err.Error())
 		return err

@@ -65,11 +65,15 @@ func (o *CurrentOpt) Run() error {
 	currentCmd := flag.NewFlagSet("current", flag.ExitOnError)
 	currentCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
 
-	currentCmd.Parse(os.Args[2:])
+	err := currentCmd.Parse(os.Args[2:])
+	if err != nil {
+		return err
+	}
+
 	if configfile == "" {
 		configfile = GetDefaultConfigFile()
 	}
-	err := config.Init(configfile)
+	err = config.Init(configfile)
 	if err != nil {
 		fmt.Printf("init config failed: %s\n", err.Error())
 		return err

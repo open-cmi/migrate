@@ -23,12 +23,15 @@ func (o *UpOpt) Run() error {
 
 	upCmd.IntVar(&count, "count", count, "migrate up count")
 
-	upCmd.Parse(os.Args[2:])
+	err := upCmd.Parse(os.Args[2:])
+	if err != nil {
+		return err
+	}
 
 	if configfile == "" {
 		configfile = GetDefaultConfigFile()
 	}
-	err := config.Init(configfile)
+	err = config.Init(configfile)
 	if err != nil {
 		fmt.Printf("init config failed: %s\n", err.Error())
 		return err
