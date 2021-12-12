@@ -22,7 +22,7 @@ func (o *DownOpt) Run() error {
 
 	downCmd := flag.NewFlagSet("down", flag.ExitOnError)
 	downCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
-	downCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory")
+	downCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory")
 	downCmd.IntVar(&count, "count", count, "migrate count")
 
 	err := downCmd.Parse(os.Args[2:])

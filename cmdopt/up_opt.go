@@ -18,9 +18,8 @@ type UpOpt struct {
 // Run up operation run
 func (o *UpOpt) Run() error {
 	upCmd := flag.NewFlagSet("up", flag.ContinueOnError)
-	upCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is empty, use go mode")
+	upCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
 	upCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
-
 	upCmd.IntVar(&count, "count", count, "migrate up count")
 
 	err := upCmd.Parse(os.Args[2:])

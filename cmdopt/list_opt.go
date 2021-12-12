@@ -60,7 +60,7 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 // Run list operation run
 func (o *ListOpt) Run() {
 	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
-	listCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+	listCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
 
 	listCmd.Parse(os.Args[2:])
 

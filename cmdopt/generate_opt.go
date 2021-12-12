@@ -70,7 +70,7 @@ var name string = ""
 // Run run
 func (g *GenerateOpt) Run() error {
 	generateCmd := flag.NewFlagSet("generate", flag.ExitOnError)
-	generateCmd.StringVar(&migratedir, "migrations", migratedir, "migration directory, if migration is emptry, use go mode")
+	generateCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
 	generateCmd.StringVar(&name, "name", name, "script name")
 
 	generateCmd.Parse(os.Args[2:])
