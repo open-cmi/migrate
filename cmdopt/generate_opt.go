@@ -24,7 +24,6 @@ import (
 
 // ChangeMeInstance migrate
 type ChangeMeInstance struct {
-	Name string
 }
 
 // Up up migrate
