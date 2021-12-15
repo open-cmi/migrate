@@ -17,8 +17,6 @@ var gotemplate string = `
 package migrations
 
 import (
-	"fmt"
-
 	"github.com/open-cmi/migrate"
 	"github.com/open-cmi/migrate/cmdopt"
 	"github.com/open-cmi/migrate/global"
@@ -33,18 +31,18 @@ type ChangeMeInstance struct {
 func (mi ChangeMeInstance) Up() error {
 	db := global.DB
 
-	fmt.Println("example up")
-	fmt.Println(db)
-	return nil
+	dbsql := sqlClause
+	_, err := db.Exec(dbsql)
+	return err
 }
 
 // Down down migrate
 func (mi ChangeMeInstance) Down() error {
 	db := global.DB
 
-	fmt.Println("example down")
-	fmt.Println(db)
-	return nil
+	dbsql := sqlClause
+	_, err := db.Exec(dbsql)
+	return err
 }
 
 func init() {
@@ -126,5 +124,6 @@ func (g *GenerateOpt) Run() error {
 		}
 		io.WriteString(wf, sqldown)
 	}
+	fmt.Printf("generate file successfully!\n")
 	return nil
 }
