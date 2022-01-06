@@ -71,6 +71,8 @@ func (o *DownOpt) Run() error {
 			dbexec := fmt.Sprintf("delete from migrations where seq='%s'", m.Seq)
 			db.Exec(dbexec)
 			fmt.Println("successfully!!")
+		} else {
+			fmt.Printf("migrate down failed: %s\n", err.Error())
 		}
 		count--
 	}
