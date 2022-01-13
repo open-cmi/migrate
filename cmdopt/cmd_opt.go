@@ -11,7 +11,7 @@ type CommandOpt struct {
 }
 
 // SubCommands sub command
-var SubCommands []string = []string{"current", "list", "down", "up", "generate"}
+var SubCommands []string = []string{"current", "list", "down", "up", "generate", "help"}
 
 // ParseArgs parse args
 func ParseArgs() (opt CommandOpt) {

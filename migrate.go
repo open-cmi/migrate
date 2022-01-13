@@ -22,3 +22,12 @@ func Run() {
 	opt := cmdopt.ParseArgs()
 	opt.Run()
 }
+
+func IsMigrateCommand(cmd string) bool {
+	for _, c := range cmdopt.SubCommands {
+		if c == cmd {
+			return true
+		}
+	}
+	return false
+}
