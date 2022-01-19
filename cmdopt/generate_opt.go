@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/open-cmi/goutils/common"
+	"github.com/open-cmi/goutils/pathutil"
 )
 
 var gotemplate string = `
@@ -87,7 +87,7 @@ func (g *GenerateOpt) Run() error {
 	date := fmt.Sprintf("%4d%02d%02d%02d%02d%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 	if MigrateMode == "go" {
 		// 从template模版读取字符串，然后替换日期
-		rt := common.Getwd()
+		rt := pathutil.Getwd()
 
 		wfile := fmt.Sprintf("%s_%s.go", date, name)
 		wfilepath := filepath.Join(rt, "migrations", wfile)

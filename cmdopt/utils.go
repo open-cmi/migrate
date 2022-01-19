@@ -11,8 +11,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/open-cmi/goutils"
-	"github.com/open-cmi/goutils/common"
+	"github.com/open-cmi/goutils/fileutil"
+	"github.com/open-cmi/goutils/pathutil"
 	"github.com/open-cmi/migrate/config"
 )
 
@@ -30,7 +30,7 @@ type SeqInfo struct {
 
 // GetDefaultConfigFile get default file
 func GetDefaultConfigFile() string {
-	rp := common.Getwd()
+	rp := pathutil.Getwd()
 	configfile := filepath.Join(rp, "etc", "db.json")
 	return configfile
 }
@@ -65,7 +65,7 @@ func ExecSQLMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
 	sqlfile := si.Seq + "_" + si.Description + "." + updown + "." + si.Ext
 	sqlfilepath := filepath.Join(MigrateDir, sqlfile)
 
-	if !goutils.IsExist(sqlfilepath) {
+	if !fileutil.IsExist(sqlfilepath) {
 		errmsg := fmt.Sprintf("migrate file %s not exist\n", sqlfilepath)
 		return errors.New(errmsg)
 	}
