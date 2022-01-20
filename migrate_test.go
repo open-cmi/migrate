@@ -3,9 +3,7 @@ package migrate
 import "testing"
 
 func Test_IsMigrateCommand(t *testing.T) {
-	if !IsMigrateCommand("help") {
-		t.Errorf("test migrate command error\n")
-	}
+
 	if !IsMigrateCommand("list") {
 		t.Errorf("test migrate command error\n")
 	}

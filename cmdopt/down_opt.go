@@ -10,7 +10,6 @@ import (
 )
 
 var configfile string = ""
-var migratedir string = ""
 var count int = -1
 
 // DownOpt down operation
@@ -22,7 +21,8 @@ func (o *DownOpt) Run() error {
 
 	downCmd := flag.NewFlagSet("down", flag.ExitOnError)
 	downCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
-	downCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory")
+	downCmd.StringVar(&format, "format", format, "format, go or sql")
+	downCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
 	downCmd.IntVar(&count, "count", count, "migrate count")
 
 	err := downCmd.Parse(os.Args[2:])
@@ -38,11 +38,14 @@ func (o *DownOpt) Run() error {
 		fmt.Printf("init config failed: %s\n", err.Error())
 		return err
 	}
-	if migratedir == "" {
+	if format == "" || format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
-		SetMigrateDir(migratedir)
+	}
+
+	if input != "" {
+		SetMigrateDir(input)
 	}
 
 	db := global.DB

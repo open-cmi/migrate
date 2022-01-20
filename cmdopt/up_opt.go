@@ -18,7 +18,8 @@ type UpOpt struct {
 // Run up operation run
 func (o *UpOpt) Run() error {
 	upCmd := flag.NewFlagSet("up", flag.ContinueOnError)
-	upCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
+	upCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
+	upCmd.StringVar(&format, "format", format, "format, go or sql")
 	upCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
 	upCmd.IntVar(&count, "count", count, "migrate up count")
 
@@ -30,16 +31,21 @@ func (o *UpOpt) Run() error {
 	if configfile == "" {
 		configfile = GetDefaultConfigFile()
 	}
+
 	err = config.Init(configfile)
 	if err != nil {
 		fmt.Printf("init config failed: %s\n", err.Error())
 		return err
 	}
-	if migratedir == "" {
+
+	if format == "" || format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
-		SetMigrateDir(migratedir)
+	}
+
+	if input != "" {
+		SetMigrateDir(input)
 	}
 
 	db := global.DB

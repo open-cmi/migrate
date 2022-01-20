@@ -14,7 +14,7 @@ import (
 )
 
 var gotemplate string = `
-package migrations
+package migration
 
 import (
 	"github.com/open-cmi/migrate"
@@ -67,7 +67,8 @@ var name string = ""
 // Run run
 func (g *GenerateOpt) Run() error {
 	generateCmd := flag.NewFlagSet("generate", flag.ExitOnError)
-	generateCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
+	generateCmd.StringVar(&output, "output", output, "output directory")
+	generateCmd.StringVar(&format, "format", output, "format, go or sql")
 	generateCmd.StringVar(&name, "name", name, "script name")
 
 	generateCmd.Parse(os.Args[2:])
@@ -76,21 +77,26 @@ func (g *GenerateOpt) Run() error {
 		generateCmd.Usage()
 		return errors.New("name cant't be empty")
 	}
-	if migratedir == "" {
+
+	if format == "" || format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
-		SetMigrateDir(migratedir)
 	}
+
+	if output == "" {
+		rt := pathutil.Getwd()
+		output = filepath.Join(rt, "migration")
+	}
+
+	SetMigrateDir(output)
 
 	t := time.Now()
 	date := fmt.Sprintf("%4d%02d%02d%02d%02d%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 	if MigrateMode == "go" {
 		// 从template模版读取字符串，然后替换日期
-		rt := pathutil.Getwd()
-
 		wfile := fmt.Sprintf("%s_%s.go", date, name)
-		wfilepath := filepath.Join(rt, "migrations", wfile)
+		wfilepath := filepath.Join(MigrateDir, wfile)
 		wf, err := os.OpenFile(wfilepath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 		if err != nil {
 			fmt.Printf("create file failed in migrations, please confirm migrations directory is exist\n")

@@ -60,15 +60,19 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 // Run list operation run
 func (o *ListOpt) Run() {
 	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
-	listCmd.StringVar(&migratedir, "sql-migrations", migratedir, "sql migration directory, if you use go mode, ignore it")
+	listCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
+	listCmd.StringVar(&format, "format", format, "format, go or sql")
 
 	listCmd.Parse(os.Args[2:])
 
-	if migratedir == "" {
+	if format == "" || format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
-		SetMigrateDir(migratedir)
+	}
+
+	if input != "" {
+		SetMigrateDir(input)
 	}
 
 	migrations := o.GetMigrationList()

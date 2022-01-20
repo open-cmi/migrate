@@ -5,6 +5,6 @@
     "port": 25432,
     "user": "postgres",
     "password": "",
-    "database": "test_xsnos2"
+    "database": "test_migrate"
   }
 }
