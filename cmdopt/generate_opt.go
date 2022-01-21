@@ -30,8 +30,13 @@ type ChangeMeInstance struct {
 func (mi ChangeMeInstance) Up() error {
 	db := global.DB
 
-	dbsql := sqlClause
-	_, err := db.Exec(dbsql)
+	sqlClause := fmt.Sprintf(`+"`"+`
+		CREATE TABLE IF NOT EXISTS template (
+			id char(64) NOT NULL PRIMARY KEY,
+			name VARCHAR(256) NOT NULL unique DEFAULT ''
+		)
+	`+"`"+`)
+	_, err := db.Exec(sqlClause)
 	return err
 }
 
@@ -39,8 +44,8 @@ func (mi ChangeMeInstance) Up() error {
 func (mi ChangeMeInstance) Down() error {
 	db := global.DB
 
-	dbsql := sqlClause
-	_, err := db.Exec(dbsql)
+	sqlClause := fmt.Sprintf("DROP TABLE IF EXISTS template")
+	_, err := db.Exec(sqlClause)
 	return err
 }
 
@@ -107,7 +112,6 @@ func (g *GenerateOpt) Run() error {
 
 		newcontent := strings.Replace(content, "00000000000000", date, -1)
 		newcontent = strings.Replace(newcontent, "example", name, -1)
-		newcontent = strings.Replace(newcontent, "MigrateInstance", "ChangeMeInstance", -1)
 		io.WriteString(wf, newcontent)
 	} else {
 		// 从template模版读取字符串，然后替换日期
