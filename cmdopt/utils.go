@@ -1,7 +1,6 @@
 package cmdopt
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/open-cmi/goutils/fileutil"
 	"github.com/open-cmi/goutils/pathutil"
 	"github.com/open-cmi/migrate/config"
@@ -61,7 +61,7 @@ func SetMigrateDir(dir string) {
 }
 
 // ExecSQLMigrate exec sql mod
-func ExecSQLMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
+func ExecSQLMigrate(db *sqlx.DB, si *SeqInfo, updown string) (err error) {
 	sqlfile := si.Seq + "_" + si.Description + "." + updown + "." + si.Ext
 	sqlfilepath := filepath.Join(MigrateDir, sqlfile)
 
@@ -98,7 +98,7 @@ func ExecSQLMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
 }
 
 // ExecGoMigrate exec go migrate
-func ExecGoMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
+func ExecGoMigrate(db *sqlx.DB, si *SeqInfo, updown string) (err error) {
 	instance := si.Instance
 	ref := reflect.ValueOf(instance)
 	var fun reflect.Value
@@ -116,7 +116,7 @@ func ExecGoMigrate(db *sql.DB, si *SeqInfo, updown string) (err error) {
 }
 
 // ExecSoFile exec plugin so file
-func ExecSoFile(db *sql.DB, sqlfile string) (err error) {
+func ExecSoFile(db *sqlx.DB, sqlfile string) (err error) {
 	p, err := plugin.Open(sqlfile)
 	if err != nil {
 		errmsg := fmt.Sprintf("open %s failed", sqlfile)
@@ -128,6 +128,6 @@ func ExecSoFile(db *sql.DB, sqlfile string) (err error) {
 		return errors.New(errmsg)
 	}
 
-	migrate.(func(*sql.DB))(db)
+	migrate.(func(*sqlx.DB))(db)
 	return
 }

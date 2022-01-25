@@ -1,7 +1,7 @@
 package global
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 )
 
-var DB *sql.DB
+var DB *sqlx.DB
