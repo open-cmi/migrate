@@ -2,24 +2,24 @@ package migrate
 
 import "testing"
 
-func Test_IsMigrateCommand(t *testing.T) {
+func Test_IsSubCommand(t *testing.T) {
 
-	if !IsMigrateCommand("list") {
+	if !IsSubCommand("list") {
 		t.Errorf("test migrate command error\n")
 	}
-	if !IsMigrateCommand("generate") {
+	if !IsSubCommand("generate") {
 		t.Errorf("test migrate command error\n")
 	}
-	if !IsMigrateCommand("up") {
+	if !IsSubCommand("up") {
 		t.Errorf("test migrate command error\n")
 	}
-	if !IsMigrateCommand("down") {
+	if !IsSubCommand("down") {
 		t.Errorf("test migrate command error\n")
 	}
-	if !IsMigrateCommand("current") {
+	if !IsSubCommand("current") {
 		t.Errorf("test migrate command error\n")
 	}
-	if IsMigrateCommand("test") {
+	if IsSubCommand("test") {
 		t.Errorf("test migrate command error\n")
 	}
 }

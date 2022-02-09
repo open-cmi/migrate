@@ -1,5 +1,4 @@
-
-package migrations
+package migration
 
 import (
 	"fmt"
@@ -40,4 +39,3 @@ func init() {
 		Instance:    ChangeMeInstance{},
 	})
 }
-

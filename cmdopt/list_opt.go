@@ -13,12 +13,6 @@ import (
 type ListOpt struct {
 }
 
-// GoMigrationList migration list
-var GoMigrationList []SeqInfo
-
-// SQLMigrationList migrate list
-var SQLMigrationList []SeqInfo
-
 // GetMigrationList get migration list
 func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 

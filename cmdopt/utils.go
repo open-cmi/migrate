@@ -16,9 +16,6 @@ import (
 	"github.com/open-cmi/migrate/config"
 )
 
-// Service service belong
-var Service string = ""
-
 // SeqInfo migrate seq info
 type SeqInfo struct {
 	Seq         string

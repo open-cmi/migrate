@@ -1,18 +1,12 @@
 package migrate
 
 import (
+	"os"
 	"sort"
 	"strings"
 
 	"github.com/open-cmi/migrate/cmdopt"
 )
-
-// Init module init
-func Init(service string) error {
-
-	cmdopt.Service = service
-	return nil
-}
 
 // Register register
 func Register(seq *cmdopt.SeqInfo) {
@@ -24,17 +18,29 @@ func Register(seq *cmdopt.SeqInfo) {
 }
 
 // Run run command
-func Run() {
+func Run(service string) {
+	// init service
+	cmdopt.Service = service
 
+	// parse command
 	opt := cmdopt.ParseArgs()
 	opt.Run()
 }
 
-func IsMigrateCommand(cmd string) bool {
+func IsSubCommand(cmd string) bool {
 	for _, c := range cmdopt.SubCommands {
 		if c == cmd {
 			return true
 		}
+	}
+	return false
+}
+
+// TryRun 尝试运行，如果不是migrate的命令，则返回false
+func TryRun(service string) bool {
+	if len(os.Args) > 1 && IsSubCommand(os.Args[1]) {
+		Run(service)
+		return true
 	}
 	return false
 }

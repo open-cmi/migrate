@@ -9,9 +9,6 @@ import (
 	"github.com/open-cmi/migrate/global"
 )
 
-var configfile string = ""
-var count int = -1
-
 // DownOpt down operation
 type DownOpt struct {
 }
