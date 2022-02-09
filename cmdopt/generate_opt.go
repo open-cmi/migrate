@@ -13,12 +13,9 @@ import (
 	"github.com/open-cmi/goutils/pathutil"
 )
 
-var gotemplate string = `
-package migration
+var gotemplate string = `package migration
 
 import (
-	"fmt"
-
 	"github.com/open-cmi/migrate"
 	"github.com/open-cmi/migrate/cmdopt"
 	"github.com/open-cmi/migrate/global"
@@ -32,12 +29,12 @@ type ChangeMeInstance struct {
 func (mi ChangeMeInstance) Up() error {
 	db := global.DB
 
-	sqlClause := fmt.Sprintf(`+"`"+`
+	sqlClause := ` + "`" + `
 		CREATE TABLE IF NOT EXISTS template (
 			id char(64) NOT NULL PRIMARY KEY,
 			name VARCHAR(256) NOT NULL unique DEFAULT ''
 		)
-	`+"`"+`)
+	` + "`" + `
 	_, err := db.Exec(sqlClause)
 	return err
 }
@@ -46,7 +43,7 @@ func (mi ChangeMeInstance) Up() error {
 func (mi ChangeMeInstance) Down() error {
 	db := global.DB
 
-	sqlClause := fmt.Sprintf("DROP TABLE IF EXISTS template")
+	sqlClause := ` + "`" + `DROP TABLE IF EXISTS template` + "`" + `
 	_, err := db.Exec(sqlClause)
 	return err
 }
