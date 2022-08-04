@@ -56,7 +56,7 @@ func InitDB() error {
 
 // Init config module init
 func Init(configfile string) (err error) {
-	parser := confparser.New(configfile)
+	parser := confparser.NewParser(configfile)
 	if parser == nil {
 		return errors.New("parse config failed")
 	}
