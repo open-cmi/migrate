@@ -39,7 +39,6 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 		item.Seq = sd[0]
 		item.Description = sd[1]
 		item.Ext = arr[2]
-		item.Service = Service
 		migrations = append(migrations, item)
 	}
 	if len(migrations) != 0 {
@@ -52,12 +51,15 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 }
 
 // Run list operation run
-func (o *ListOpt) Run() {
+func (o *ListOpt) Run() error {
 	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
 	listCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
 	listCmd.StringVar(&format, "format", format, "format, go or sql")
 
-	listCmd.Parse(os.Args[2:])
+	err := listCmd.Parse(os.Args[2:])
+	if err != nil {
+		return err
+	}
 
 	if format == "" || format == "go" {
 		SetMigrateMode("go")
@@ -72,10 +74,11 @@ func (o *ListOpt) Run() {
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
 		fmt.Printf("no migrations found\n")
-		return
+		return nil
 	}
 
 	for _, m := range migrations {
 		fmt.Printf("%s %s %s\n", m.Seq, m.Description, m.Ext)
 	}
+	return nil
 }

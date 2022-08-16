@@ -18,6 +18,3 @@ var count int = -1
 
 // GoMigrationList migration list
 var GoMigrationList []SeqInfo
-
-// Service service belong
-var Service string = ""

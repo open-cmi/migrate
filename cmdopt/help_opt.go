@@ -21,9 +21,9 @@ func (ho *HelpOpt) Run() {
 	fmt.Printf("usage: %s subcommand option\n\n", proc)
 	fmt.Printf("subcommand:\n")
 	fmt.Printf("  current:     show current database migrations\n")
-	fmt.Printf("  list:        show migrations file list\n")
-	fmt.Printf("  up:          migrate number files\n")
-	fmt.Printf("  down:        rollback number database\n")
+	fmt.Printf("  list:        show this program migrations\n")
+	fmt.Printf("  up:          migrate up from program migrations\n")
+	fmt.Printf("  down:        rollback from database\n")
 	fmt.Printf("  generate:    generate migrate file\n")
 
 	fmt.Printf("%s subcommand -h for more subcommand info\n", proc)

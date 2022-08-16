@@ -88,8 +88,8 @@ func (o *UpOpt) Run() error {
 		}
 
 		if err == nil {
-			dbexec := fmt.Sprintf("insert into migrations(seq, description, service, ext) values('%s','%s','%s','%s')",
-				fl.Seq, fl.Description, Service, fl.Ext)
+			dbexec := fmt.Sprintf("insert into migrations(seq, description, ext) values('%s','%s','%s')",
+				fl.Seq, fl.Description, fl.Ext)
 			_, err = db.Exec(dbexec)
 			if err != nil {
 				fmt.Printf("migrate %s %s failed, %s\n", fl.Seq, fl.Description, err.Error())

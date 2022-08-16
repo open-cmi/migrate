@@ -26,15 +26,14 @@ func GetInstanceFromSeq(seq string) interface{} {
 // GetMigrationList get migration list
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 	db := global.DB
-	dbquery := fmt.Sprintf(`select * from migrations where service='%s' order by seq asc`, Service)
+	dbquery := `select * from migrations order by seq asc`
 	r, err := db.Query(dbquery)
 	if err != nil {
 		// select error , init table
 		var init string = `CREATE TABLE IF NOT EXISTS migrations (
 							seq varchar(14) UNIQUE NOT NULL,
 							description varchar(100) NOT NULL default '',
-							ext varchar(100) NOT NULL default 'sql',
-							service varchar(100) NOT NULL default ''
+							ext varchar(100) NOT NULL default 'sql'
 							)`
 		_, err = db.Exec(init)
 		if err != nil {
@@ -45,7 +44,7 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 
 	for r.Next() {
 		var row SeqInfo
-		err = r.Scan(&row.Seq, &row.Description, &row.Ext, &row.Service)
+		err = r.Scan(&row.Seq, &row.Description, &row.Ext)
 		if err != nil {
 			break
 		}

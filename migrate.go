@@ -18,9 +18,7 @@ func Register(seq *cmdopt.SeqInfo) {
 }
 
 // Run run command
-func Run(service string) {
-	// init service
-	cmdopt.Service = service
+func Run() {
 
 	// parse command
 	opt := cmdopt.ParseArgs()
@@ -37,9 +35,9 @@ func IsSubCommand(cmd string) bool {
 }
 
 // TryRun 尝试运行，如果不是migrate的命令，则返回false
-func TryRun(service string) bool {
+func TryRun() bool {
 	if len(os.Args) > 1 && IsSubCommand(os.Args[1]) {
-		Run(service)
+		Run()
 		return true
 	}
 	return false

@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	migrate.Run("example")
+	migrate.Run()
 }

@@ -21,7 +21,6 @@ type SeqInfo struct {
 	Seq         string
 	Description string
 	Ext         string
-	Service     string
 	Instance    interface{}
 }
 
