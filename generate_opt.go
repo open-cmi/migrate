@@ -1,8 +1,6 @@
-package cmdopt
+package migrate
 
 import (
-	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -16,9 +14,8 @@ import (
 var gotemplate string = `package migration
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/open-cmi/migrate"
-	"github.com/open-cmi/migrate/cmdopt"
-	"github.com/open-cmi/migrate/global"
 )
 
 // ChangeMeInstance migrate
@@ -26,9 +23,7 @@ type ChangeMeInstance struct {
 }
 
 // Up up migrate
-func (mi ChangeMeInstance) Up() error {
-	db := global.DB
-
+func (mi ChangeMeInstance) Up(db *sqlx.DB) error {
 	sqlClause := ` + "`" + `
 		CREATE TABLE IF NOT EXISTS template (
 			id char(64) NOT NULL PRIMARY KEY,
@@ -40,16 +35,14 @@ func (mi ChangeMeInstance) Up() error {
 }
 
 // Down down migrate
-func (mi ChangeMeInstance) Down() error {
-	db := global.DB
-
+func (mi ChangeMeInstance) Down(db *sqlx.DB) error {
 	sqlClause := ` + "`" + `DROP TABLE IF EXISTS template` + "`" + `
 	_, err := db.Exec(sqlClause)
 	return err
 }
 
 func init() {
-	migrate.Register(&cmdopt.SeqInfo{
+	migrate.Register(&migrate.SeqInfo{
 		Seq:         "00000000000000",
 		Description: "example",
 		Ext:         "go",
@@ -64,36 +57,37 @@ var sqldown string = ``
 
 // GenerateOpt generate opt
 type GenerateOpt struct {
+	Output string
+	Format string
+	Name   string
 }
 
 var name string = ""
 
+func NewGenerateOpt(name string, format string, output string) *GenerateOpt {
+	return &GenerateOpt{
+		Name:   name,
+		Format: format,
+		Output: output,
+	}
+}
+
 // Run run
 func (g *GenerateOpt) Run() error {
-	generateCmd := flag.NewFlagSet("generate", flag.ExitOnError)
-	generateCmd.StringVar(&output, "output", output, "output directory")
-	generateCmd.StringVar(&format, "format", output, "format, go or sql")
-	generateCmd.StringVar(&name, "name", name, "script name")
 
-	generateCmd.Parse(os.Args[2:])
-
-	if name == "" {
-		generateCmd.Usage()
-		return errors.New("name cant't be empty")
-	}
-
-	if format == "" || format == "go" {
+	name = g.Name
+	if g.Format == "" || g.Format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
 	}
 
-	if output == "" {
+	if g.Output == "" {
 		rt := pathutil.Getwd()
-		output = filepath.Join(rt, "migration")
+		g.Output = filepath.Join(rt, "migration")
 	}
 
-	SetMigrateDir(output)
+	SetMigrateDir(g.Output)
 
 	t := time.Now()
 	date := fmt.Sprintf("%4d%02d%02d%02d%02d%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())

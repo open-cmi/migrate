@@ -1,16 +1,20 @@
-package cmdopt
+package migrate
 
 import (
-	"flag"
 	"fmt"
-	"os"
 
-	"github.com/open-cmi/migrate/config"
-	"github.com/open-cmi/migrate/global"
+	"github.com/jmoiron/sqlx"
 )
 
 // CurrentOpt get current migration
 type CurrentOpt struct {
+	DB *sqlx.DB
+}
+
+func NewCurrentOpt(db *sqlx.DB) *CurrentOpt {
+	return &CurrentOpt{
+		DB: db,
+	}
 }
 
 // GetInstanceFromSeq get instance from seq
@@ -25,7 +29,7 @@ func GetInstanceFromSeq(seq string) interface{} {
 
 // GetMigrationList get migration list
 func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
-	db := global.DB
+	db := o.DB
 	dbquery := `select * from migrations order by seq asc`
 	r, err := db.Query(dbquery)
 	if err != nil {
@@ -61,22 +65,7 @@ func (o *CurrentOpt) GetMigrationList() (migrations []SeqInfo) {
 
 // Run run
 func (o *CurrentOpt) Run() error {
-	currentCmd := flag.NewFlagSet("current", flag.ExitOnError)
-	currentCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
 
-	err := currentCmd.Parse(os.Args[2:])
-	if err != nil {
-		return err
-	}
-
-	if configfile == "" {
-		configfile = GetDefaultConfigFile()
-	}
-	err = config.Init(configfile)
-	if err != nil {
-		fmt.Printf("init config failed: %s\n", err.Error())
-		return err
-	}
 	migrations := o.GetMigrationList()
 	if len(migrations) == 0 {
 		fmt.Printf("no migrations\n")

@@ -1,4 +1,4 @@
-package cmdopt
+package migrate
 
 import (
 	"errors"
@@ -6,14 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"plugin"
 	"reflect"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/open-cmi/goutils/fileutil"
-	"github.com/open-cmi/goutils/pathutil"
-	"github.com/open-cmi/migrate/config"
 )
 
 // SeqInfo migrate seq info
@@ -22,22 +19,6 @@ type SeqInfo struct {
 	Description string
 	Ext         string
 	Instance    interface{}
-}
-
-// GetDefaultConfigFile get default file
-func GetDefaultConfigFile() string {
-	rp := pathutil.Getwd()
-	configfile := filepath.Join(rp, "etc", "db.json")
-	return configfile
-}
-
-// SetConfigFile set config file
-func SetConfigFile(configfile string) {
-	err := config.Init(configfile)
-	if err != nil {
-		fmt.Printf("init config failed: %s\n", err.Error())
-		return
-	}
 }
 
 // MigrateMode mode
@@ -103,7 +84,7 @@ func ExecGoMigrate(db *sqlx.DB, si *SeqInfo, updown string) (err error) {
 	} else if updown == "down" {
 		fun = ref.MethodByName("Down")
 	}
-	var params []reflect.Value = []reflect.Value{}
+	var params []reflect.Value = []reflect.Value{reflect.ValueOf(db)}
 	retlist := fun.Call(params)
 	if retlist[0].Interface() != nil {
 		return retlist[0].Interface().(error)
@@ -112,18 +93,18 @@ func ExecGoMigrate(db *sqlx.DB, si *SeqInfo, updown string) (err error) {
 }
 
 // ExecSoFile exec plugin so file
-func ExecSoFile(db *sqlx.DB, sqlfile string) (err error) {
-	p, err := plugin.Open(sqlfile)
-	if err != nil {
-		errmsg := fmt.Sprintf("open %s failed", sqlfile)
-		return errors.New(errmsg)
-	}
-	migrate, err := p.Lookup("Migrate")
-	if err != nil {
-		errmsg := "look up Migrate function failed"
-		return errors.New(errmsg)
-	}
+// func ExecSoFile(db *sqlx.DB, sqlfile string) (err error) {
+// 	p, err := plugin.Open(sqlfile)
+// 	if err != nil {
+// 		errmsg := fmt.Sprintf("open %s failed", sqlfile)
+// 		return errors.New(errmsg)
+// 	}
+// 	mig, err := p.Lookup("Migrate")
+// 	if err != nil {
+// 		errmsg := "look up Migrate function failed"
+// 		return errors.New(errmsg)
+// 	}
 
-	migrate.(func(*sqlx.DB))(db)
-	return
-}
+// 	mig.(func(*sqlx.DB))(db)
+// 	return
+// }

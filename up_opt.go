@@ -1,62 +1,53 @@
-package cmdopt
+package migrate
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"strings"
 
-	"github.com/open-cmi/migrate/config"
-	"github.com/open-cmi/migrate/global"
+	"github.com/jmoiron/sqlx"
 )
 
 // UpOpt up operation
 type UpOpt struct {
-	Args []string
+	DB     *sqlx.DB
+	Input  string
+	Format string
+	Count  int
+}
+
+func NewUpOpt(db *sqlx.DB, format string, input string, count int) *UpOpt {
+	return &UpOpt{
+		DB:     db,
+		Input:  input,
+		Format: format,
+		Count:  count,
+	}
 }
 
 // Run up operation run
 func (o *UpOpt) Run() error {
-	upCmd := flag.NewFlagSet("up", flag.ContinueOnError)
-	upCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
-	upCmd.StringVar(&format, "format", format, "format, go or sql")
-	upCmd.StringVar(&configfile, "config", configfile, "config file, default ./etc/db.json")
-	upCmd.IntVar(&count, "count", count, "migrate up count")
 
-	err := upCmd.Parse(os.Args[2:])
-	if err != nil {
-		return err
-	}
-
-	if configfile == "" {
-		configfile = GetDefaultConfigFile()
-	}
-
-	err = config.Init(configfile)
-	if err != nil {
-		fmt.Printf("init config failed: %s\n", err.Error())
-		return err
-	}
-
-	if format == "" || format == "go" {
+	if o.Format == "" || o.Format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
 	}
 
-	if input != "" {
-		SetMigrateDir(input)
+	if o.Input != "" {
+		SetMigrateDir(o.Input)
 	}
 
-	db := global.DB
-	co := &CurrentOpt{}
+	db := o.DB
+	co := &CurrentOpt{
+		DB: o.DB,
+	}
 	migrations := co.GetMigrationList()
 
 	lo := &ListOpt{}
 	filelist := lo.GetMigrationList()
 
-	if count == -1 {
-		count = len(filelist)
+	if o.Count == 0 {
+		o.Count = len(filelist)
 	}
 
 	// find start index
@@ -76,8 +67,8 @@ func (o *UpOpt) Run() error {
 			return nil
 		}
 	}
-
-	for idx := startIndex; idx < len(filelist) && count > 0; idx++ {
+	var err error
+	for idx := startIndex; idx < len(filelist) && o.Count > 0; idx++ {
 		fl := filelist[idx]
 		fmt.Printf("start to up migrate: %s %s\n", fl.Seq, fl.Description)
 
@@ -100,7 +91,7 @@ func (o *UpOpt) Run() error {
 			fmt.Printf("migrate failed, error: %s\n", err.Error())
 			break
 		}
-		count--
+		o.Count--
 	}
 	return err
 }

@@ -1,16 +1,23 @@
-package cmdopt
+package migrate
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"sort"
 	"strings"
 )
 
 // ListOpt list operation
 type ListOpt struct {
+	Input  string
+	Format string
+}
+
+func NewListOpt(format string, input string) *ListOpt {
+	return &ListOpt{
+		Input:  input,
+		Format: format,
+	}
 }
 
 // GetMigrationList get migration list
@@ -52,23 +59,15 @@ func (o *ListOpt) GetMigrationList() (migrations []SeqInfo) {
 
 // Run list operation run
 func (o *ListOpt) Run() error {
-	listCmd := flag.NewFlagSet("list", flag.ExitOnError)
-	listCmd.StringVar(&input, "input", input, "if use sql, should specify sql directory")
-	listCmd.StringVar(&format, "format", format, "format, go or sql")
 
-	err := listCmd.Parse(os.Args[2:])
-	if err != nil {
-		return err
-	}
-
-	if format == "" || format == "go" {
+	if o.Format == "" || o.Format == "go" {
 		SetMigrateMode("go")
 	} else {
 		SetMigrateMode("sql")
 	}
 
-	if input != "" {
-		SetMigrateDir(input)
+	if o.Input != "" {
+		SetMigrateDir(o.Input)
 	}
 
 	migrations := o.GetMigrationList()
