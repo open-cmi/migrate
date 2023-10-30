@@ -105,6 +105,7 @@ func (g *GenerateOpt) Run() error {
 
 		newcontent := strings.Replace(content, "00000000000000", date, -1)
 		newcontent = strings.Replace(newcontent, "example", name, -1)
+		newcontent = strings.Replace(newcontent, "template", name, -1)
 		io.WriteString(wf, newcontent)
 	} else {
 		// 从template模版读取字符串，然后替换日期
